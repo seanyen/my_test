@@ -39,8 +39,7 @@ jobs:
       echo Make sure environment is sourced
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64 -host_arch=amd64
 
-      git clone https://github.com/microsoft/vcpkg
-      .\vcpkg\bootstrap-vcpkg.bat
+      powershell .\vcpkgInstall.ps1
     env:
       ROS_METAPACKAGE: ${{ parameters.ros_metapackage }}
       ROS_VERSION: ${{ parameters.ros_version }}
