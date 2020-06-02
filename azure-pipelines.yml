@@ -37,22 +37,10 @@ jobs:
       echo %PATH%
 
       echo Make sure environment is sourced
-      rem call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64 -host_arch=amd64
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64 -host_arch=amd64
 
-      echo *****************Print variables after sourcing**********************
-      set
-      echo %PATH%
-      
-      where powershell.exe
-
-      echo Adding roswin source
-      choco sources add -n=roswin -s https://roswin.azurewebsites.net/api/v2/ --priority 1
-
-      echo Installing VC package
-      choco upgrade vcpython27 -y --execution-timeout=0 --no-progress
-
-      echo Installing ROS
-      choco upgrade %ROS_METAPACKAGE% -y --execution-timeout=0 --no-progress --pre
+      git clone https://github.com/microsoft/vcpkg
+      .\vcpkg\bootstrap-vcpkg.bat
     env:
       ROS_METAPACKAGE: ${{ parameters.ros_metapackage }}
       ROS_VERSION: ${{ parameters.ros_version }}
