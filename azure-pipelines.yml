@@ -1,0 +1,58 @@
+parameters:
+- name: ros_metapackage
+  type: string
+  default: 'ros-melodic-desktop_full'
+- name: ros_version
+  type: string
+  default: '20200501.1.0'
+- name: ros_cartographer_version
+  type: string
+  default: '20200501.1.0'
+- name: install_chocolatey
+  type: boolean
+  default: false
+
+trigger:
+- master
+
+jobs:
+- job: Build
+  pool:
+    vmImage: 'windows-2019'
+  timeoutInMinutes: 240
+  steps:
+  - checkout: self
+    submodules: recursive
+
+  - script: |
+      @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+      SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+    displayName: Install Chocolatey
+    workingDirectory: $(Build.SourcesDirectory)
+    condition: eq('${{ parameters.install_chocolatey }}', true)
+
+  - script: |
+      echo *****************Print variables before sourcing**********************
+      set
+      echo %PATH%
+
+      echo Make sure environment is sourced
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64 -host_arch=amd64
+
+      echo *****************Print variables after sourcing**********************
+      set
+      echo %PATH%
+
+      echo Adding roswin source
+      choco sources add -n=roswin -s https://roswin.azurewebsites.net/api/v2/ --priority 1
+
+      echo Installing VC package
+      choco upgrade vcpython27 -y --execution-timeout=0 --no-progress
+
+      echo Installing ROS
+      choco upgrade %ROS_METAPACKAGE% -y --execution-timeout=0 --no-progress --pre
+    env:
+      ROS_METAPACKAGE: ${{ parameters.ros_metapackage }}
+      ROS_VERSION: ${{ parameters.ros_version }}
+    displayName: Install ROS
+    workingDirectory: $(Build.SourcesDirectory)
