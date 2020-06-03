@@ -37,7 +37,7 @@ jobs:
       echo %PATH%
 
       echo Make sure environment is sourced
-      ::call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64 -host_arch=amd64
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64 -host_arch=amd64
 
       choco pack .\test\test.nuspec -y
       choco install -s .\ test -y
