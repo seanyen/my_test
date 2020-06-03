@@ -13,6 +13,8 @@ try {
     if (-Not (Test-Path -Path $InstallDir -PathType Container)) {
       $Env:GIT_REDIRECT_STDERR="2>&1"
       git clone --depth=1 $Uri $InstallDir -q -b $VcpkgVersion | Out-null
+      dir env:
+      cmd /c set PATH
       Invoke-Expression "$InstallDir\bootstrap-vcpkg.bat"
     } else {
       throw "remove $InstallDir and reinstall again."
