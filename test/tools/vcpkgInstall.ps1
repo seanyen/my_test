@@ -13,9 +13,11 @@ try {
     if (-Not (Test-Path -Path $InstallDir -PathType Container)) {
       $Env:GIT_REDIRECT_STDERR="2>&1"
       git clone --depth=1 $Uri $InstallDir -q -b $VcpkgVersion | Out-null
-      $systemPowerShell = cmd /c where powershell.exe
-      Write-Host "Using PowerShell: $systemPowerShell"
-      Invoke-Expression "$InstallDir\bootstrap-vcpkg.bat"
+      $p = Start-Process -UseNewEnvironment -PassThru -FilePath "$env:comspec" -Wait -NoNewWindow -ArgumentList "/c", "$InstallDir\bootstrap-vcpkg.bat"
+      if($p.Exitcode -ne 0)
+      {
+        throw "bootstrap-vcpkg.bat failed on $p.Exitcode."
+      }
     } else {
       throw "remove $InstallDir and reinstall again."
     }
